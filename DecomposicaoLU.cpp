@@ -11,6 +11,7 @@ double** inversivel(double** matrizLU, int linhas, int colunas); // Função inver
 double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colunasXY, int colunasB); // função para multiplicar duas matrizes
 void truncamento(double& num); // função de truncamento
 void decomposicao(double** matrizA, double** matrizL, double** matrizU, int linhas, int colunas); // Função para decompor matrizes L e U
+bool verifyDiagonalZero(double** matriz, int linhas, int colunas);
 
 int main() {
     system("chcp 1250 > nul");
@@ -235,6 +236,7 @@ double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colun
 double** inversivel(double** matrizA, int linhas, int colunas) {
 
     bool check = verifyZero(matrizA, linhas, colunas);
+    check = verifyDiagonalZero(matrizA, linhas, colunas);
     if (check == true) {
         return nullptr;
     }
@@ -367,6 +369,16 @@ bool verifyZero(double** matriz, int linhas, int colunas) {
     }
 
     return false; // Retorna false se não houver linhas ou colunas completamente zeradas
+}
+
+bool verifyDiagonalZero(double** matriz, int linhas, int colunas) {
+    // Verifica se algum elemento na diagonal principal é zero
+    for (int i = 0; i < linhas; ++i) {
+        if (matriz[i][i] == 0) {
+            return true; // Se algum elemento na diagonal for zero, retorna true
+        }
+    }
+    return false; // Retorna false se nenhum elemento na diagonal for zero
 }
 
 // Função para verificar se a matriz possui linhas ou colunas que são combinação linear
