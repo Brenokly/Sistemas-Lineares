@@ -141,60 +141,65 @@ int main() {
         matrizL = inversivel(matrizL, linhasA, colunasA);
         matrizU = inversivel(matrizU, linhasA, colunasA);
 
-        cout << "\n=============================\nMatrizL Invertida:" << endl;
-        for (int i = 0; i < linhasA; ++i) {
-            for (int j = 0; j < colunasA; ++j) {
-                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                cout << setw(6) << matrizL[i][j] << " ";
+        if (matrizL == nullptr || matrizU == nullptr) {
+            cout << "\nA matriz U ou L não é invertível, certamente o determinante da matrizA = 0" << endl;
+        }
+        else {
+            cout << "\n=============================\nMatrizL Invertida:" << endl;
+            for (int i = 0; i < linhasA; ++i) {
+                for (int j = 0; j < colunasA; ++j) {
+                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                    cout << setw(6) << matrizL[i][j] << " ";
+                }
+                cout << endl;
             }
-            cout << endl;
-        }
 
-        cout << "\n=============================\nMatrizU Invertida:" << endl;
-        for (int i = 0; i < linhasA; ++i) {
-            for (int j = 0; j < colunasA; ++j) {
-                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                cout << setw(6) << matrizU[i][j] << " ";
+            cout << "\n=============================\nMatrizU Invertida:" << endl;
+            for (int i = 0; i < linhasA; ++i) {
+                for (int j = 0; j < colunasA; ++j) {
+                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                    cout << setw(6) << matrizU[i][j] << " ";
+                }
+                cout << endl;
             }
-            cout << endl;
-        }
 
-        double** matrizY = multMatriz(matrizL, matrizB, linhasA, colunasA, colunasB);
-        double** matrizX = multMatriz(matrizU, matrizY, linhasA, colunasA, colunasB);
+            double** matrizY = multMatriz(matrizL, matrizB, linhasA, colunasA, colunasB);
+            double** matrizX = multMatriz(matrizU, matrizY, linhasA, colunasA, colunasB);
 
-        cout << "\n=============================\nMatrizY:" << endl;
-        for (int i = 0; i < linhasB; ++i) {
-            for (int j = 0; j < colunasB; ++j) {
-                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                cout << setw(6) << matrizY[i][j] << " ";
+            cout << "\n=============================\nMatrizY:" << endl;
+            for (int i = 0; i < linhasB; ++i) {
+                for (int j = 0; j < colunasB; ++j) {
+                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                    cout << setw(6) << matrizY[i][j] << " ";
+                }
+                cout << endl;
             }
-            cout << endl;
-        }
 
-        cout << "\n=============================\nMatriz X:" << endl;
-        for (int i = 0; i < linhasB; ++i) {
-            for (int j = 0; j < colunasB; ++j) {
-                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                cout << setw(6) << matrizX[i][j] << " ";
+            cout << "\n=============================\nMatriz X:" << endl;
+            for (int i = 0; i < linhasB; ++i) {
+                for (int j = 0; j < colunasB; ++j) {
+                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                    cout << setw(6) << matrizX[i][j] << " ";
+                }
+                cout << endl;
             }
-            cout << endl;
-        }
 
-        // Libera a memória alocada
-        for (int i = 0; i < linhasB; ++i) {
-            delete[] matrizB[i];
-            delete[] matrizA[i];
-            delete[] matrizL[i];
-            delete[] matrizU[i];
-            delete[] matrizY[i];
-            delete[] matrizX[i];
+            // Libera a memória alocada
+            for (int i = 0; i < linhasB; ++i) {
+                delete[] matrizB[i];
+                delete[] matrizA[i];
+                delete[] matrizL[i];
+                delete[] matrizU[i];
+                delete[] matrizY[i];
+                delete[] matrizX[i];
+            }
+            delete[] matrizA;
+            delete[] matrizL;
+            delete[] matrizU;
+            delete[] matrizB;
+            delete[] matrizY;
+            delete[] matrizX;
         }
-        delete[] matrizA;
-        delete[] matrizL;
-        delete[] matrizU;
-        delete[] matrizB;
-        delete[] matrizY;
-        delete[] matrizX;
     }
 
     return 0;
@@ -228,6 +233,12 @@ double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colun
 
 // Função para calcular a inversa de uma matriz
 double** inversivel(double** matrizA, int linhas, int colunas) {
+
+    bool check = verifyZero(matrizA, linhas, colunas);
+    if (check == true) {
+        return nullptr;
+    }
+
     // Cria uma matriz aumentada contendo a matriz original e a matriz identidade
     double** matrizAumentada = new double* [linhas];
     for (int i = 0; i < linhas; ++i) {
