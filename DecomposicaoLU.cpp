@@ -4,14 +4,15 @@
 using namespace std;
 
 // Protótipos de função
+bool verifyDiagonalZero(double** matriz, int linhas, int colunas);
 bool verifyLinearidade(double** matriz, int linhas, int colunas); // Função para verificar se a matriz possui linhas ou colunas que são combinação linear
 bool verifyZero(double** matriz, int linhas, int colunas); // Função para verificar se a matriz possui linhas ou colunas que são todas zerada
 void zeros(double** matriz, int linhas, int colunas); // Função para verificar e ordenar a disposição dos zeros na matriz
-double** inversivel(double** matrizLU, int linhas, int colunas); // Função inverter a matriz.
+double** inversivel(double** matrizLU, int linhas, int colunas); // Função inverter a matriz (Fiz, mas não é usada)
+double** resolveSistemaTriangularSup(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB);
+double** resolveSistemaTriangularInf(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB);
 double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colunasXY, int colunasB); // função para multiplicar duas matrizes
-void truncamento(double& num); // função de truncamento
 void decomposicao(double** matrizA, double** matrizL, double** matrizU, int linhas, int colunas); // Função para decompor matrizes L e U
-bool verifyDiagonalZero(double** matriz, int linhas, int colunas);
 
 int main() {
     system("chcp 1250 > nul");
@@ -139,33 +140,16 @@ int main() {
             cout << endl;
         }
 
-        matrizL = inversivel(matrizL, linhasA, colunasA);
-        matrizU = inversivel(matrizU, linhasA, colunasA);
+        bool check1 = ((verifyZero(matrizL, linhasA, colunasA)) || (verifyDiagonalZero(matrizL, linhasA, colunasA)));
+        bool check2 = ((verifyZero(matrizU, linhasA, colunasA)) || (verifyDiagonalZero(matrizU, linhasA, colunasA)));
 
-        if (matrizL == nullptr || matrizU == nullptr) {
+        if (check1 == true || check2 == true) {
             cout << "\nA matriz U ou L não é invertível, certamente o determinante da matrizA = 0" << endl;
         }
         else {
-            cout << "\n=============================\nMatrizL Invertida:" << endl;
-            for (int i = 0; i < linhasA; ++i) {
-                for (int j = 0; j < colunasA; ++j) {
-                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                    cout << setw(6) << matrizL[i][j] << " ";
-                }
-                cout << endl;
-            }
 
-            cout << "\n=============================\nMatrizU Invertida:" << endl;
-            for (int i = 0; i < linhasA; ++i) {
-                for (int j = 0; j < colunasA; ++j) {
-                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                    cout << setw(6) << matrizU[i][j] << " ";
-                }
-                cout << endl;
-            }
-
-            double** matrizY = multMatriz(matrizL, matrizB, linhasA, colunasA, colunasB);
-            double** matrizX = multMatriz(matrizU, matrizY, linhasA, colunasA, colunasB);
+            double** matrizY = resolveSistemaTriangularInf(matrizL, matrizB, linhasA, colunasA, colunasB);
+            double** matrizX = resolveSistemaTriangularSup(matrizU, matrizY, linhasA, colunasA, colunasB);
 
             cout << "\n=============================\nMatrizY:" << endl;
             for (int i = 0; i < linhasB; ++i) {
@@ -206,6 +190,48 @@ int main() {
     return 0;
 }
 
+double** resolveSistemaTriangularInf(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB) {
+    // Criar a matriz X
+    double** matrizX = new double* [linhasA];
+    for (int i = 0; i < linhasA; ++i) {
+        matrizX[i] = new double[colunasB];
+    }
+
+    // Resolve um sistema com uma matriz triangular inferior
+    for (int i = 0; i < linhasA; ++i) {
+        for (int j = 0; j < colunasB; ++j) {
+            double soma = 0.0;
+            for (int k = 0; k < i; ++k) {
+                soma += matrizA[i][k] * matrizX[k][j];
+            }
+            matrizX[i][j] = (matrizB[i][j] - soma);
+        }
+    }
+
+    return matrizX;
+}
+
+double** resolveSistemaTriangularSup(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB) {
+    // Criar a matriz X
+    double** matrizX = new double* [linhasA];
+    for (int i = 0; i < linhasA; ++i) {
+        matrizX[i] = new double[colunasB];
+    }
+
+    // Resolver para uma matriz triangular superior
+    for (int i = linhasA - 1; i >= 0; --i) {
+        for (int j = 0; j < colunasB; ++j) {
+            double soma = 0.0;
+            for (int k = i + 1; k < linhasA; ++k) {
+                soma += matrizA[i][k] * matrizX[k][j];
+            }
+            matrizX[i][j] = (matrizB[i][j] - soma) / matrizA[i][i];
+        }
+    }
+
+    return matrizX;
+}
+
 // Função para multiplicar duas matrizes
 double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colunasXY, int colunasB) {
     // Cria a matriz de retorno para armazenar o resultado da multiplicação
@@ -232,7 +258,7 @@ double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colun
     return matrizResult; // Retorna a matriz resultante da multiplicação
 }
 
-// Função para calcular a inversa de uma matriz
+// Função para calcular a inversa de uma matriz. Não é ultilizado nesse programa, fiz apenas por fazer.
 double** inversivel(double** matrizA, int linhas, int colunas) {
 
     bool check = verifyZero(matrizA, linhas, colunas);
@@ -465,12 +491,4 @@ void zeros(double** matriz, int linhas, int colunas) {
     }
 
     delete[] contador; // Libera a memória alocada para o array contador
-}
-
-// Função para truncar um número para três casas decimais
-void truncamento(double& num) {
-    // Multiplica o número por 1000 e trunca para remover as casas decimais excedentes
-    double truncatedNum = trunc(num * 1000.0) / 1000.0;
-    // Arredonda o número truncado para garantir que a terceira casa decimal seja a última
-    num = std::round(truncatedNum * 1000.0) / 1000.0;
 }
