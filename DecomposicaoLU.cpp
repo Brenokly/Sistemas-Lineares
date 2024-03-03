@@ -18,7 +18,7 @@ int main() {
     system("chcp 1250 > nul");
     cout << std::fixed << setprecision(2);
 
-    cout << "=========================\nMatriz A" << endl;
+    cout << "========================================\nMatriz A" << endl;
 
     // Definindo as dimensões da matriz
     int linhasA, colunasA;
@@ -48,7 +48,7 @@ int main() {
         cout << "A matriz A não é invertível!" << endl;
     }
     else {
-        cout << "=========================\nMatriz B" << endl;
+        cout << "========================================\nMatriz B" << endl;
 
         // Definindo as dimensões da matriz
         int linhasB, colunasB;
@@ -72,7 +72,7 @@ int main() {
             }
         }
 
-        cout << "\n=============================\nMatrizA:" << endl;
+        cout << "\n========================================\nMatrizA:" << endl;
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < colunasA; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -81,7 +81,7 @@ int main() {
             cout << endl;
         }
 
-        cout << "\n=============================\nMatrizB:" << endl;
+        cout << "\n========================================\nMatrizB:" << endl;
         for (int i = 0; i < linhasB; ++i) {
             for (int j = 0; j < colunasB; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -122,7 +122,7 @@ int main() {
 
         decomposicao(matrizA, matrizL, matrizU, linhasA, colunasA);
 
-        cout << "\n=============================\nMatrizL:" << endl;
+        cout << "\n========================================\nMatrizL:" << endl;
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < colunasA; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -131,7 +131,7 @@ int main() {
             cout << endl;
         }
 
-        cout << "\n=============================\nMatrizU:" << endl;
+        cout << "\n========================================\nMatrizU:" << endl;
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < colunasA; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -151,7 +151,7 @@ int main() {
             double** matrizY = resolveSistemaTriangularInf(matrizL, matrizB, linhasA, colunasA, colunasB);
             double** matrizX = resolveSistemaTriangularSup(matrizU, matrizY, linhasA, colunasA, colunasB);
 
-            cout << "\n=============================\nMatrizY:" << endl;
+            cout << "\n========================================\nMatrizY:" << endl;
             for (int i = 0; i < linhasB; ++i) {
                 for (int j = 0; j < colunasB; ++j) {
                     // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -160,7 +160,7 @@ int main() {
                 cout << endl;
             }
 
-            cout << "\n=============================\nMatriz X:" << endl;
+            cout << "\n========================================\nMatriz X:" << endl;
             for (int i = 0; i < linhasB; ++i) {
                 for (int j = 0; j < colunasB; ++j) {
                     // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
