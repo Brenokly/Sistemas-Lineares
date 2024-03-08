@@ -6,11 +6,11 @@ using namespace std;
 
 bool Diagonaldominante(double** matriz, int linhas, int coluna); // Checa se a matriz é diagonal dominante
 double** GausSeidel(double** matrizA, double** matrizB, double** solucao, int linhasA, int colunasA, double epsilon); // Método de Gaus-Jacobi
-double NormaMatricial(double** solucao1, double** solucao2, int linhas); // Cálcula o erro entre duas soluções
+double NormaMaxima(double** solucao1, double** solucao2, int linhas); // Cálcula o erro entre duas soluções
 
 int main() {
     cout << std::fixed << setprecision(2);
-    system("chcp 1252 > nul");
+    system("chcp 1252 > nul");  
 
     // Definindo as dimensões da matriz A
     int linhasA, colunasA;
@@ -166,7 +166,7 @@ double** GausSeidel(double** matrizA, double** matrizB, double** solucao0, int l
         }
 
         // Calcula a norma entre as soluções
-        double norma = NormaMatricial(solucao1, solucao0, linhasA);
+        double norma = NormaMaxima(solucao1, solucao0, linhasA);
 
         // Atualiza a norma atual
         normaAtual = norma;
@@ -180,18 +180,17 @@ double** GausSeidel(double** matrizA, double** matrizB, double** solucao0, int l
     return solucao1;
 }
 
-double NormaMatricial(double** solucao1, double** solucao2, int linhas) {
+double NormaMaxima(double** solucao1, double** solucao2, int linhas) {
+    double maxDiferenca = 0.0;
 
-    double normaNumerador = 0.0;
-    double normaDenominador = 0.0;
-
-    for (size_t i = 0; i < linhas; i++)
-    {
-        normaNumerador += solucao2[i][0] - solucao1[i][0];
-        normaDenominador += solucao2[i][0];
+    for (size_t i = 0; i < linhas; i++) {
+        double diferenca = abs(solucao2[i][0] - solucao1[i][0]);
+        if (diferenca > maxDiferenca) {
+            maxDiferenca = diferenca;
+        }
     }
 
-    return abs(normaNumerador) / abs(normaDenominador);
+    return maxDiferenca;
 }
 
 bool Diagonaldominante(double** matriz, int linhas, int colunas) {
