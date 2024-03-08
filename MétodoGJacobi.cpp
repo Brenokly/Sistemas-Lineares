@@ -4,7 +4,7 @@
 using namespace std;
 
 bool Diagonaldominante(double ** matriz, int linhas, int coluna); // Checa se a matriz é diagonal dominante
-double** GausJacobi(double** matrizA, double** matrizB, double** solucao, int linhasA, int colunasA, double epsilon); // Método de Gaus-Jacobi
+double** GausJacobi(double** matrizA, double** matrizB, double** solucao0, int linhasA, int colunasA, double epsilon, int & cont); // Método de Gaus-Jacobi
 double NormaMaxima(double** solucao1, double** solucao2, int linhas); // Cálcula o erro entre duas soluções
 
 int main() {
@@ -102,7 +102,9 @@ int main() {
         cout << "\n=====================================================\nCom a precisão Epsilon = ";
         std::cout << std::defaultfloat << epsilon;
 
-        solucao = GausJacobi(matrizA, matrizB, solucao, linhasA, colunasA, epsilon);
+        int cont = 0;
+
+        solucao = GausJacobi(matrizA, matrizB, solucao, linhasA, colunasA, epsilon, cont);
 
         cout << std::fixed << setprecision(2);
         
@@ -114,6 +116,8 @@ int main() {
             }
             cout << endl;
         }
+
+        cout << "\n=====================================================\nConvergiu em: " << cont << " iterações!" << endl;
 
         // Libera a memória alocada
         for (int i = 0; i < linhasA; ++i) {
@@ -133,7 +137,7 @@ int main() {
 	return 0;
 }
 
-double** GausJacobi(double** matrizA, double** matrizB, double** solucao0, int linhasA, int colunasA, double epsilon) {
+double** GausJacobi(double** matrizA, double** matrizB, double** solucao0, int linhasA, int colunasA, double epsilon, int & cont) {
     double** solucao1 = new double* [linhasA];
     for (int i = 0; i < linhasA; ++i) {
         solucao1[i] = new double[1] {0};
@@ -162,6 +166,7 @@ double** GausJacobi(double** matrizA, double** matrizB, double** solucao0, int l
         for (int i = 0; i < linhasA; ++i) {
             solucao0[i][0] = solucao1[i][0];
         }
+        cont++;
     }
 
     return solucao1;
