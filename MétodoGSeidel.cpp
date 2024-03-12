@@ -10,14 +10,12 @@ double NormaMaxima(double** solucao1, double** solucao2, int linhas); // Cálcula
 
 int main() {
     cout << std::fixed << setprecision(2);
-    system("chcp 1252 > nul");  
 
     // Definindo as dimensões da matriz A
     int linhasA, colunasA;
-    cout << "Digite o número de linhas da matriz A: ";
+    cout << "Digite o tamanho da matriz quadrada A: ";
     cin >> linhasA;
-    cout << "Digite o número de colunas da matriz A: ";
-    cin >> colunasA;
+    colunasA = linhasA;
 
     // Alocando memória para a matriz (array 2D)
     double** matrizA = new double* [linhasA];
@@ -29,7 +27,7 @@ int main() {
     // Preenchendo a matriz
     for (int i = 0; i < linhasA; ++i) {
         for (int j = 0; j < colunasA; ++j) {
-            cout << "Digite o valor para a posição [" << i << "][" << j << "]: ";
+            cout << "Digite o valor para a posiaco [" << i << "][" << j << "]: ";
             cin >> matrizA[i][j];
         }
     }
@@ -46,7 +44,7 @@ int main() {
         // Preenchendo a matriz
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < 1; ++j) {
-                cout << "Digite o valor para a posição [" << i << "][" << j << "]: ";
+                cout << "Digite o valor para a posicao [" << i << "][" << j << "]: ";
                 cin >> matrizB[i][j];
             }
         }
@@ -58,7 +56,7 @@ int main() {
             solucao[i] = new double[1] {0};
         }
 
-        cout << "\n=====================================================\nEntre solução Inicial:" << endl;;
+        cout << "\n=====================================================\nEntre solucao Inicial:" << endl;;
         // Preenchendo a matriz
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < 1; ++j) {
@@ -67,7 +65,7 @@ int main() {
             }
         }
 
-        cout << "\n=====================================================\nQual a precisão de Epsilon (Ex: 0.000001)? ";
+        cout << "\n=====================================================\nQual a precisao de Epsilon (Ex: 0.000001)? ";
         double epsilon;
         cin >> epsilon;
 
@@ -91,7 +89,7 @@ int main() {
             cout << endl;
         }
 
-        cout << "\n=====================================================\nSolução Inicial:" << endl;;
+        cout << "\n=====================================================\nSolucao Inicial:" << endl;;
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < 1; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -100,16 +98,18 @@ int main() {
             cout << endl;
         }
 
-        cout << "\n=====================================================\nCom a precisão Epsilon = ";
+        cout << "\n=====================================================\nCom a precisao Epsilon = ";
         std::cout << std::defaultfloat << epsilon;
 
         int cont = 0;
 
+        cout << "\n=====================================================\nIteracoes:";
+
         solucao = GausSeidel(matrizA, matrizB, solucao, linhasA, colunasA, epsilon, cont);
 
-        cout << std::fixed << setprecision(2);
+        cout << std::fixed << setprecision(4);
 
-        cout << "\n\n=====================================================\nSolução para o sistema:" << endl;
+        cout << "\n\n=====================================================\nSolucao para o sistema:" << endl;
         for (int i = 0; i < linhasA; ++i) {
             for (int j = 0; j < 1; ++j) {
                 // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
@@ -118,7 +118,7 @@ int main() {
             cout << endl;
         }
 
-        cout << "\n=====================================================\nConvergiu em: " << cont << " iterações!" << endl;
+        cout << "\n=====================================================\nConvergiu em: " << cont << " iteracoes!" << endl;
 
         // Libera a memória alocada
         for (int i = 0; i < linhasA; ++i) {
@@ -129,7 +129,7 @@ int main() {
         delete[] solucao;
     }
     else {
-        cout << "A matriz não é diagonal dominante, logo ela não convergirá, tente outra matriz!" << endl;
+        cout << "A matriz não é diagonal dominante, logo ela nao convergirá, tente outra matriz!" << endl;
     }
 
     // Libera a memória alocada
@@ -181,6 +181,22 @@ double** GausSeidel(double** matrizA, double** matrizB, double** solucao0, int l
         }
 
         cont++;
+
+        if (normaAtual >= epsilon) {
+            if (cont == 1) {
+                cout << "\n\nIteracao " << cont << " :" << endl;
+            }
+            else {
+                cout << "\n=====================================================\nIteracao " << cont << " :" << endl;
+            }
+
+            for (int i = 0; i < linhasA; ++i) {
+                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                cout << std::fixed << setprecision(4);
+                cout << setw(6) << solucao1[i][0] << " ";
+                cout << endl;
+            }
+        }
     }
 
     return solucao1;

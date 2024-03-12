@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <cmath>
 using namespace std;
@@ -64,21 +65,9 @@ double frobeniusNorm(vector<vector<double>>& matrix) {
     return sqrt(norm);
 }
 
-// Função para calcular o número de condição de uma matriz
-double conditionNumber(vector<vector<double>>& matrix) {
-    // Encontrando a inversa da matriz
-    vector<vector<double>> inverse = inverseMatrix(matrix);
-
-    // Calculando as normas Frobenius da matriz e de sua inversa
-    double normA = frobeniusNorm(matrix);
-    double normAInverse = frobeniusNorm(inverse);
-
-    // Calculando o número de condição
-    return normA * normAInverse;
-}
-
 int main() {
     system("chcp 1252 > nul");
+    cout << std::fixed << setprecision(2);
 
     int n;
     cout << "Digite o tamanho da matriz quadrada: ";
@@ -96,11 +85,44 @@ int main() {
         }
     }
 
-    // Calculando o número de condição
-    double condNumber = conditionNumber(matrix);
+    // Linha de separação e título da matriz A
+    cout << "=====================================================\nMatriz A:" << endl;
 
-    // Exibindo o número de condição
-    cout << "Número de condicionamento: " << condNumber << endl;
+    // Imprimindo a matriz original
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cout << setw(6) << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    // Encontrando a inversa da matriz
+    vector<vector<double>> inverse = inverseMatrix(matrix);
+
+    // Imprimindo a matriz inversa
+    cout << "=====================================================\nMatriz A^-1:\n";
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cout << setw(6) << inverse[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    cout << std::fixed << setprecision(4);
+
+    // Calculando e exibindo a norma de A
+    double normA = frobeniusNorm(matrix);
+    cout << "=====================================================\nNorma de A: " << normA << endl;
+
+    cout << "\n";
+
+    // Calculando e exibindo a norma de A^-1
+    double normAInverse = frobeniusNorm(inverse);
+    cout << "Norma de A^-1: " << normAInverse << endl;
+
+    // Calculando e exibindo o número de condição
+    double condNumber = normA * normAInverse;
+    cout << "=====================================================\nNúmero de condicionamento: " << condNumber << endl;
 
     return 0;
 }

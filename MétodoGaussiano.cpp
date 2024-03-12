@@ -14,12 +14,13 @@ int main() {
     system("chcp 1250 > nul");
     cout << std::fixed << setprecision(2);
 
+    // Sistema A * X = B
+
     // Definindo as dimensões da matriz
     int linhas, colunas;
-    cout << "Digite o número de linhas da matriz: ";
+    cout << "Digite o tamanho da matriz quadrada A: ";
     cin >> linhas;
-    cout << "Digite o número de colunas da matriz: ";
-    cin >> colunas;
+    colunas = linhas;
 
     // Alocando memória para a matriz (array 2D)
     double** matriz = new double* [linhas];
@@ -41,7 +42,7 @@ int main() {
     // Array para os coeficientes das variáveis
     double* coeficientes = new double[linhas] {0.0};
 
-    cout << "Digite os coeficientes:" << endl;
+    cout << "Digite os coeficientes (Matriz B):" << endl;
     for (int i = 0; i < linhas; i++) {
         cout << "x" << (i + 1) << " = ";
         cin >> igualdade[i];

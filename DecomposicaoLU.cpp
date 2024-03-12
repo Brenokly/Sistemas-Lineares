@@ -50,12 +50,8 @@ int main() {
     else {
         cout << "========================================\nMatriz B" << endl;
 
-        // Definindo as dimensões da matriz
-        int linhasB, colunasB;
-        cout << "Digite o número de linhas da matriz B: ";
-        cin >> linhasB;
-        cout << "Digite o número de colunas da matriz B: ";
-        cin >> colunasB;
+        int linhasB = linhasA;
+        int colunasB = 1;
 
         // Alocando memória para a matriz (array 2D)
         double** matrizB = new double* [linhasB];

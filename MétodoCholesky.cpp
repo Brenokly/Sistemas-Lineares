@@ -8,26 +8,21 @@ bool isSimetrica(double** matrizA, int linhas, int colunas);
 bool verifyDiagonalZero(double** matriz, int linhas, int colunas);
 bool verifyLinearidade(double** matriz, int linhas, int colunas); // Função para verificar se a matriz possui linhas ou colunas que são combinação linear
 bool verifyZero(double** matriz, int linhas, int colunas); // Função para verificar se a matriz possui linhas ou colunas que são todas zerada
-void zeros(double** matriz, int linhas, int colunas); // Função para verificar e ordenar a disposição dos zeros na matriz
-double** inversivel(double** matrizLU, int linhas, int colunas); // Função inverter a matriz (Fiz, mas não é usada)
 double** resolveSistemaTriangularSup(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB);
 double** resolveSistemaTriangularInf(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB);
-double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colunasXY, int colunasB); // função para multiplicar duas matrizes
-void decomposicaoCholesky(double** matrizA, double** matrizL, int linhas, int colunas); // Função para decompor matrizes L e U
+bool decomposicaoCholesky(double** matrizA, double** matrizL, int linhas, int colunas); // Função para decompor matrizes L e U
 void transposta(double** matrizA, double** matrizAT, int linhas, int colunas);
 
 int main() {
-    system("chcp 1250 > nul");
-    cout << std::fixed << setprecision(2);
+    cout << fixed << setprecision(2);
 
     cout << "=========================\nMatriz A" << endl;
 
     // Definindo as dimensões da matriz
     int linhasA, colunasA;
-    cout << "Digite o número de linhas da matriz A: ";
+    cout << "Digite o tamanho da matriz quadrada A: ";
     cin >> linhasA;
-    cout << "Digite o número de colunas da matriz A: ";
-    cin >> colunasA;
+    colunasA = linhasA;
 
     // Alocando memória para a matriz (array 2D)
     double** matrizA = new double* [linhasA];
@@ -39,25 +34,20 @@ int main() {
     // Preenchendo a matriz
     for (int i = 0; i < linhasA; ++i) {
         for (int j = 0; j < colunasA; ++j) {
-            cout << "Digite o valor para a posição [" << i << "][" << j << "]: ";
+            cout << "Digite o valor para a posicao [" << i << "][" << j << "]: ";
             cin >> matrizA[i][j];
         }
     }
 
     bool check = verifyLinearidade(matrizA, linhasA, colunasA);
-
-    if (check == true) {
-        cout << "A matriz A não é invertível!" << endl;
+    if (verifyLinearidade(matrizA, linhasA, colunasA) || !isSimetrica(matrizA, linhasA, colunasA)) {
+        cout << "A matriz {A} e singular ou nao e simetrica, logo nao e possivel utilizar esse metodo!" << endl;
     }
     else {
         cout << "=========================\nMatriz B" << endl;
 
         // Definindo as dimensões da matriz
-        int linhasB, colunasB;
-        cout << "Digite o número de linhas da matriz B: ";
-        cin >> linhasB;
-        cout << "Digite o número de colunas da matriz B: ";
-        cin >> colunasB;
+        int linhasB = linhasA, colunasB = 1;
 
         // Alocando memória para a matriz (array 2D)
         double** matrizB = new double* [linhasB];
@@ -69,7 +59,7 @@ int main() {
         // Preenchendo a matriz
         for (int i = 0; i < linhasB; ++i) {
             for (int j = 0; j < colunasB; ++j) {
-                cout << "Digite o valor para a posição [" << i << "][" << j << "]: ";
+                cout << "Digite o valor para a posicao [" << i << "][" << j << "]: ";
                 cin >> matrizB[i][j];
             }
         }
@@ -106,79 +96,87 @@ int main() {
             matrizLT[i] = new double[colunasA];
         }
 
-        decomposicaoCholesky(matrizA, matrizL, linhasA, colunasA);
+        bool check3 = decomposicaoCholesky(matrizA, matrizL, linhasA, colunasA);
 
-        cout << "\n=============================\nMatrizL:" << endl;
-        for (int i = 0; i < linhasA; ++i) {
-            for (int j = 0; j < colunasA; ++j) {
-                // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                cout << setw(6) << matrizL[i][j] << " ";
-            }
-            cout << endl;
-        }
-
-        bool check1 = ((verifyZero(matrizL, linhasA, colunasA)) || (verifyDiagonalZero(matrizL, linhasA, colunasA)));
-
-        if (check1 == true) {
-            cout << "\nA matriz L não é invertível, certamente o determinante da matrizA = 0" << endl;
-        }
-        else {
-
-            transposta(matrizL, matrizLT, linhasA, colunasA);
-
-            cout << "\n=============================\nMatrizLT:" << endl;
+        if (check3 == true) {
+            cout << "\n=============================\nMatrizL:" << endl;
             for (int i = 0; i < linhasA; ++i) {
                 for (int j = 0; j < colunasA; ++j) {
                     // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                    cout << setw(6) << matrizLT[i][j] << " ";
+                    cout << setw(6) << matrizL[i][j] << " ";
                 }
                 cout << endl;
             }
 
-            double** matrizY = resolveSistemaTriangularInf(matrizL, matrizB, linhasA, colunasA, colunasB);
-            double** matrizX = resolveSistemaTriangularSup(matrizLT, matrizY, linhasA, colunasA, colunasB);
+            bool check1 = ((verifyZero(matrizL, linhasA, colunasA)) || (verifyDiagonalZero(matrizL, linhasA, colunasA)));
 
-            cout << "\n=============================\nMatrizY:" << endl;
-            for (int i = 0; i < linhasB; ++i) {
-                for (int j = 0; j < colunasB; ++j) {
-                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                    cout << setw(6) << matrizY[i][j] << " ";
+            if (check1 == true) {
+                cout << "\nA matriz L nao e invertivel, certamente o determinante da matrizA = 0" << endl;
+            }
+            else {
+
+                transposta(matrizL, matrizLT, linhasA, colunasA);
+
+                cout << "\n=============================\nMatrizLT:" << endl;
+                for (int i = 0; i < linhasA; ++i) {
+                    for (int j = 0; j < colunasA; ++j) {
+                        // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                        cout << setw(6) << matrizLT[i][j] << " ";
+                    }
+                    cout << endl;
                 }
-                cout << endl;
-            }
 
-            cout << "\n=============================\nMatriz X:" << endl;
-            for (int i = 0; i < linhasB; ++i) {
-                for (int j = 0; j < colunasB; ++j) {
-                    // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
-                    cout << setw(6) << matrizX[i][j] << " ";
+                double** matrizY = resolveSistemaTriangularInf(matrizL, matrizB, linhasA, colunasA, colunasB);
+                double** matrizX = resolveSistemaTriangularSup(matrizLT, matrizY, linhasA, colunasA, colunasB);
+
+                cout << fixed << setprecision(4);
+
+                cout << "\n=============================\nMatrizY:" << endl;
+                for (int i = 0; i < linhasB; ++i) {
+                    for (int j = 0; j < colunasB; ++j) {
+                        // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                        cout << setw(7) << matrizY[i][j] << " ";
+                    }
+                    cout << endl;
                 }
-                cout << endl;
-            }
 
-            // Libera a memória alocada
-            for (int i = 0; i < linhasB; ++i) {
-                delete[] matrizB[i];
-                delete[] matrizA[i];
-                delete[] matrizL[i];
-                delete[] matrizLT[i];
-                delete[] matrizY[i];
-                delete[] matrizX[i];
+                cout << "\n=============================\nMatriz X:" << endl;
+                for (int i = 0; i < linhasB; ++i) {
+                    for (int j = 0; j < colunasB; ++j) {
+                        // Ajuste o campo de largura para 10 caracteres para alinhar os elementos
+                        cout << setw(7) << matrizX[i][j] << " ";
+                    }
+                    cout << endl;
+                }
+
+                // Libera a memória alocada
+                for (int i = 0; i < linhasB; ++i) {
+                    delete[] matrizB[i];
+                    delete[] matrizA[i];
+                    delete[] matrizL[i];
+                    delete[] matrizLT[i];
+                    delete[] matrizY[i];
+                    delete[] matrizX[i];
+                }
+                delete[] matrizA;
+                delete[] matrizL;
+                delete[] matrizLT;
+                delete[] matrizB;
+                delete[] matrizY;
+                delete[] matrizX;
             }
-            delete[] matrizA;
-            delete[] matrizL;
-            delete[] matrizLT;
-            delete[] matrizB;
-            delete[] matrizY;
-            delete[] matrizX;
+        }
+        else {
+            cout << "\n==========================================\nA matriz A nao e definida positiva!" << endl;
         }
     }
 
     return 0;
 }
 
-double** resolveSistemaTriangularInf(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB) {
-    // Criar a matriz X
+double** resolveSistemaTriangularInf(double** matrizL, double** matrizB, int linhasA, int colunasA, int colunasB) {
+    // Criar a matriz Y
+    // Faz o cálculo L * Y = B e descobre os coeficientes de Y
     double** matrizY = new double* [linhasA];
     for (int i = 0; i < linhasA; ++i) {
         matrizY[i] = new double[colunasB];
@@ -189,17 +187,18 @@ double** resolveSistemaTriangularInf(double** matrizA, double** matrizB, int lin
         for (int j = 0; j < colunasB; ++j) {
             double soma = 0.0;
             for (int k = 0; k < i; ++k) {
-                soma += matrizA[i][k] * matrizY[k][j];
+                soma += matrizL[i][k] * matrizY[k][j];
             }
-            matrizY[i][j] = (matrizB[i][j] - soma) / matrizA[i][i];
+            matrizY[i][j] = (matrizB[i][j] - soma) / matrizL[i][i];
         }
     }
 
     return matrizY;
 }
 
-double** resolveSistemaTriangularSup(double** matrizA, double** matrizB, int linhasA, int colunasA, int colunasB) {
+double** resolveSistemaTriangularSup(double** matrizLT, double** matrizY, int linhasA, int colunasA, int colunasB) {
     // Criar a matriz X
+    // Faz o cálculo L^T * X = Y e descobre os coeficientes de X
     double** matrizX = new double* [linhasA];
     for (int i = 0; i < linhasA; ++i) {
         matrizX[i] = new double[colunasB];
@@ -210,114 +209,16 @@ double** resolveSistemaTriangularSup(double** matrizA, double** matrizB, int lin
         for (int j = 0; j < colunasB; ++j) {
             double soma = 0.0;
             for (int k = i + 1; k < linhasA; ++k) {
-                soma += matrizA[i][k] * matrizX[k][j];
+                soma += matrizLT[i][k] * matrizX[k][j];
             }
-            matrizX[i][j] = (matrizB[i][j] - soma) / matrizA[i][i];
+            matrizX[i][j] = (matrizY[i][j] - soma) / matrizLT[i][i];
         }
     }
 
     return matrizX;
 }
 
-// Função para multiplicar duas matrizes
-double** multMatriz(double** matrizXY, double** matrizB, int linhasXY, int colunasXY, int colunasB) {
-    // Cria a matriz de retorno para armazenar o resultado da multiplicação
-    double** matrizResult = new double* [linhasXY];
-
-    // Aloca memória para as linhas da matriz de resultado
-    for (int i = 0; i < linhasXY; i++) {
-        matrizResult[i] = new double[colunasB] {0}; // Inicializa cada elemento como zero
-    }
-
-    // Multiplica as matrizes e armazena o resultado na matriz de retorno
-    for (int i = 0; i < linhasXY; i++) {
-        for (int j = 0; j < colunasB; j++) {
-            double soma = 0.0;
-            // Calcula o produto interno entre a linha i da matrizXY e a coluna j da matrizB
-            for (int k = 0; k < colunasXY; k++) {
-                soma += matrizXY[i][k] * matrizB[k][j];
-            }
-            // Armazena o resultado na posição (i, j) da matriz de resultado
-            matrizResult[i][j] = soma;
-        }
-    }
-
-    return matrizResult; // Retorna a matriz resultante da multiplicação
-}
-
-// Função para calcular a inversa de uma matriz. Não é ultilizado nesse programa, fiz apenas por fazer.
-double** inversivel(double** matrizA, int linhas, int colunas) {
-
-    bool check = verifyZero(matrizA, linhas, colunas);
-    check = verifyDiagonalZero(matrizA, linhas, colunas);
-    if (check == true) {
-        return nullptr;
-    }
-
-    // Cria uma matriz aumentada contendo a matriz original e a matriz identidade
-    double** matrizAumentada = new double* [linhas];
-    for (int i = 0; i < linhas; ++i) {
-        matrizAumentada[i] = new double[colunas * 2];
-        for (int j = 0; j < colunas; ++j) {
-            matrizAumentada[i][j] = matrizA[i][j];
-            matrizAumentada[i][j + colunas] = (i == j) ? 1.0 : 0.0; // Matriz identidade
-        }
-    }
-
-    // Aplica o método de eliminação de Gauss-Jordan
-    for (int i = 0; i < linhas; ++i) {
-        // Faz o pivoteamento parcial
-        int pivot_row = i;
-        for (int j = i + 1; j < linhas; ++j) {
-            if (fabs(matrizAumentada[j][i]) > fabs(matrizAumentada[pivot_row][i])) {
-                pivot_row = j;
-            }
-        }
-        // Troca as linhas se necessário
-        if (pivot_row != i) {
-            for (int k = 0; k < colunas * 2; ++k) {
-                double temp = matrizAumentada[i][k];
-                matrizAumentada[i][k] = matrizAumentada[pivot_row][k];
-                matrizAumentada[pivot_row][k] = temp;
-            }
-        }
-
-        // Normaliza a linha pivô
-        double pivot = matrizAumentada[i][i];
-        for (int j = 0; j < colunas * 2; ++j) {
-            matrizAumentada[i][j] /= pivot;
-        }
-
-        // Zera as outras entradas na coluna pivô
-        for (int k = 0; k < linhas; ++k) {
-            if (k != i) {
-                double factor = matrizAumentada[k][i];
-                for (int j = 0; j < colunas * 2; ++j) {
-                    matrizAumentada[k][j] -= factor * matrizAumentada[i][j];
-                }
-            }
-        }
-    }
-
-    // Extrai a parte da matriz identidade (a inversa) da matriz aumentada
-    double** matrizInversa = new double* [linhas];
-    for (int i = 0; i < linhas; ++i) {
-        matrizInversa[i] = new double[colunas];
-        for (int j = 0; j < colunas; ++j) {
-            matrizInversa[i][j] = matrizAumentada[i][j + colunas];
-        }
-    }
-
-    // Libera a memória alocada para a matriz aumentada
-    for (int i = 0; i < linhas; ++i) {
-        delete[] matrizAumentada[i];
-    }
-    delete[] matrizAumentada;
-
-    return matrizInversa;
-}
-
-void decomposicaoCholesky(double** matrizA, double** matrizL, int linhas, int colunas) {
+bool decomposicaoCholesky(double** matrizA, double** matrizL, int linhas, int colunas) {
     // Inicializa a matriz L com zeros
     for (int i = 0; i < linhas; ++i) {
         for (int j = 0; j < colunas; ++j) {
@@ -335,16 +236,28 @@ void decomposicaoCholesky(double** matrizA, double** matrizL, int linhas, int co
                     soma += pow(matrizL[j][k], 2);
                 }
                 matrizL[j][j] = sqrt(matrizA[j][j] - soma);
+
+                if (isnan(matrizL[j][j])) {
+                    matrizL[j][j] = 0;
+                    return false;
+                }
             }
             else {
                 // Calcula os elementos fora da diagonal principal
                 for (int k = 0; k < j; ++k) {
-                    soma += matrizL[i][k] * matrizL[j][k];
+                    soma += matrizL[j][k] * matrizL[i][k];
                 }
                 matrizL[i][j] = (matrizA[i][j] - soma) / matrizL[j][j];
+
+                if (isnan(matrizL[i][j])) {
+                    matrizL[i][j] = 0;
+                    return false;
+                }
             }
         }
     }
+
+    return true;
 }
 
 bool verifyZero(double** matriz, int linhas, int colunas) {
@@ -438,43 +351,6 @@ bool verifyLinearidade(double** matriz, int linhas, int colunas) {
     return false; // Se não houver combinação linear, retorna falso
 }
 
-// Função para reorganizar os zeros na matriz
-void zeros(double** matriz, int linhas, int colunas) {
-    // Array para contar o número de zeros em cada linha
-    int* contador = new int[linhas] {};
-
-    // Conta o número de zeros em cada linha
-    for (int i = 0; i < linhas; ++i) {
-        for (int j = 0; j < colunas; ++j) {
-            if (matriz[i][j] == 0) {
-                contador[i]++;
-            }
-        }
-    }
-
-    // Variáveis auxiliares para ordenação
-    int aux;
-    double* auxi;
-
-    // Ordena as linhas por quantidade de zeros (algoritmo de bubble sort)
-    for (int i = 0; i < linhas - 1; ++i) {
-        for (int j = 0; j < linhas - i - 1; ++j) {
-            if (contador[j] > contador[j + 1]) {
-                // Troca o número de zeros
-                aux = contador[j];
-                contador[j] = contador[j + 1];
-                contador[j + 1] = aux;
-                // Troca as linhas correspondentes
-                auxi = matriz[j];
-                matriz[j] = matriz[j + 1];
-                matriz[j + 1] = auxi;
-            }
-        }
-    }
-
-    delete[] contador; // Libera a memória alocada para o array contador
-}
-
 void transposta(double** matrizA, double** matrizAT, int linhas, int colunas) {
     // Itera sobre cada elemento da matriz original
     for (int i = 0; i < linhas; ++i) {
@@ -484,7 +360,6 @@ void transposta(double** matrizA, double** matrizAT, int linhas, int colunas) {
         }
     }
 }
-
 
 bool isSimetrica(double** matrizA, int linhas, int colunas) {
 
