@@ -215,7 +215,7 @@ bool Diagonaldominante(double** matriz, int linhas, int colunas) {
 				soma += abs(matriz[i][j]);
 			}
 		}
-		if (abs(matriz[i][i]) < soma) {
+		if (abs(matriz[i][i]) <= soma) {
 			return false;
 		}
 	}
