@@ -4,6 +4,10 @@
 using namespace std;
 
 // Protótipos de função
+double frobeniusNorm(double** matriz, int tam);
+double** inverseMatrix(double** matrix, int n);
+double determinant(double** matrix, int n);
+void swapRows(double** matrix, int row1, int row2);
 bool isSimetrica(double** matrizA, int linhas, int colunas);
 bool verifyDiagonalZero(double** matriz, int linhas, int colunas);
 bool verifyLinearidade(double** matriz, int linhas, int colunas); // Função para verificar se a matriz possui linhas ou colunas que são combinação linear
@@ -148,6 +152,10 @@ int main() {
                     }
                     cout << endl;
                 }
+
+                cout << "\n========================================\nMatrizA:" << endl;
+                cout << "Determinante: " << determinant(matrizA, linhasA) << endl;
+                cout << "Numero de condicionamento: " << frobeniusNorm(matrizA, linhasA);
 
                 // Libera a memória alocada
                 for (int i = 0; i < linhasB; ++i) {
@@ -375,4 +383,122 @@ bool isSimetrica(double** matrizA, int linhas, int colunas) {
     }
 
     return true; // Se não houver elementos diferentes, a matriz é simétrica
+}
+
+// Função para encontrar a inversa de uma matriz
+double** inverseMatrix(double** matrix, int n) {
+
+    // Criando uma matriz de identidade para armazenar a inversa
+    double** identity = new double* [n];
+
+    for (int i = 0; i < n; i++)
+    {
+        identity[i] = new double[n];
+    }
+    for (int i = 0; i < n; ++i) {
+        identity[i][i] = 1;
+    }
+
+    // Implementando a decomposição LU para encontrar a inversa
+    for (int i = 0; i < n; ++i) {
+        // Se matrix[i][i] for zero, a matriz é singular
+        if (fabs(matrix[i][i]) < 1e-10) {
+            cout << "A matriz é singular. A inversa não pode ser calculada." << endl;
+            exit(1);
+        }
+
+        // Normalizando a linha i da matriz e da matriz de identidade
+        double pivot = matrix[i][i];
+        for (int j = 0; j < n; ++j) {
+            matrix[i][j] /= pivot;
+            identity[i][j] /= pivot;
+        }
+
+        // Subtraindo outras linhas para zerar as entradas abaixo do pivô
+        for (int j = i + 1; j < n; ++j) {
+            double factor = matrix[j][i];
+            for (int k = 0; k < n; ++k) {
+                matrix[j][k] -= factor * matrix[i][k];
+                identity[j][k] -= factor * identity[i][k];
+            }
+        }
+    }
+
+    // Aplicando a eliminação gaussiana para reduzir a matriz à identidade
+    for (int i = n - 1; i > 0; --i) {
+        for (int j = i - 1; j >= 0; --j) {
+            double factor = matrix[j][i];
+            for (int k = 0; k < n; ++k) {
+                matrix[j][k] -= factor * matrix[i][k];
+                identity[j][k] -= factor * identity[i][k];
+            }
+        }
+    }
+
+    return identity;
+}
+
+// Função para calcular a norma Frobenius de uma matriz
+double frobeniusNorm(double** matriz, int tam) {
+    double norm = 0.0;
+
+    for (size_t i = 0; i < tam; i++)
+    {
+        for (size_t j = 0; j < tam; j++)
+        {
+            norm += matriz[i][j] * matriz[i][j];
+        }
+    }
+
+    return sqrt(norm);
+}
+
+// Função para trocar duas linhas de uma matriz
+void swapRows(double** matrix, int row1, int row2) {
+    double* temp = matrix[row1];
+    matrix[row1] = matrix[row2];
+    matrix[row2] = temp;
+}
+
+// Função para calcular o determinante de uma matriz usando decomposição LU
+double determinant(double** matrix, int n) {
+    double det = 1.0;
+
+    // Decomposição LU
+    for (int i = 0; i < n; ++i) {
+        // Procura o elemento máximo na coluna atual
+        int maxRow = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (fabs(matrix[j][i]) > fabs(matrix[maxRow][i])) {
+                maxRow = j;
+            }
+        }
+
+        // Troca as linhas para colocar o elemento máximo na diagonal
+        if (maxRow != i) {
+            swapRows(matrix, i, maxRow);
+            det *= -1; // Troca de linhas altera o sinal do determinante
+        }
+
+        // Fator de escala
+        double pivot = matrix[i][i];
+
+        // Se o elemento na diagonal for zero, matriz é singular
+        if (fabs(pivot) < 1e-10) {
+            return 0.0;
+        }
+
+        // Faz a eliminação gaussiana
+        for (int j = i + 1; j < n; ++j) {
+            double factor = matrix[j][i] / pivot;
+            for (int k = i; k < n; ++k) {
+                matrix[j][k] -= factor * matrix[i][k];
+            }
+        }
+
+        // Atualiza o determinante
+        det *= pivot;
+    }
+
+    return det;
 }
